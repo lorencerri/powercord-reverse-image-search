@@ -9,6 +9,12 @@ const { getOwnerInstance } = require('powercord/util');
  * This is my first powercord plugin, so please tell me if I'm doing something incorrectly.
  */
 
+const providers = [
+    ['Google Images', 'https://www.google.com/searchbyimage?image_url=%%'],
+    ['TinEye', 'https://www.tineye.com/search?url=%%'],
+    ['SauceNAO', 'https://saucenao.com/search.php?url=%%']
+];
+
 module.exports = class ReverseImageSearch extends Plugin {
     async startPlugin() {
         const { imageWrapper } = await getModule(['imageWrapper']);
@@ -27,50 +33,22 @@ module.exports = class ReverseImageSearch extends Plugin {
                             type: 'submenu',
                             name: 'Reverse Image Search',
                             getItems: () => {
-                                return [
-                                    {
-                                        type: 'button',
-                                        name: 'Google Images',
-                                        onClick: () =>
-                                            window.open(
-                                                'https://www.google.com/searchbyimage?image_url=' +
-                                                    encodeURI(
-                                                        getOwnerInstance(target)
-                                                            .props.href ||
-                                                            target.src
-                                                    ),
-                                                '_blank'
-                                            )
-                                    },
-                                    {
-                                        type: 'button',
-                                        name: 'TinEye',
-                                        onClick: () =>
-                                            window.open(
-                                                'https://www.tineye.com/search?url=' +
-                                                    encodeURI(
-                                                        getOwnerInstance(target)
-                                                            .props.href ||
-                                                            target.src
-                                                    ),
-                                                '_blank'
-                                            )
-                                    },
-                                    {
-                                        type: 'button',
-                                        name: 'SauceNAO',
-                                        onClick: () =>
-                                            window.open(
-                                                'https://saucenao.com/search.php?url=' +
-                                                    encodeURI(
-                                                        getOwnerInstance(target)
-                                                            .props.href ||
-                                                            target.src
-                                                    ),
-                                                '_blank'
-                                            )
-                                    }
-                                ];
+                                return providers.map(i => ({
+                                    type: 'button',
+                                    name: i[0],
+                                    onClick: () =>
+                                        window.open(
+                                            i[1].replace(
+                                                '%%',
+                                                encodeURI(
+                                                    getOwnerInstance(target)
+                                                        .props.href ||
+                                                        target.src
+                                                )
+                                            ),
+                                            '_blank'
+                                        )
+                                }));
                             }
                         }
                     ])
