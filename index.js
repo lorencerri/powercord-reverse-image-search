@@ -55,7 +55,7 @@ module.exports = class ReverseImageSearch extends Plugin {
                                 name: 'SauceNAO',
                                 onClick () =>
                                     window.open(
-                                        'https://saucenao.com/search.php' +
+                                        'https://saucenao.com/search.php?url=' +
                                             encodeURI(
                                                 getOwnerInstance(target).props
                                                     .href || target.src
