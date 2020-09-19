@@ -90,6 +90,24 @@ module.exports = class ReverseImageSearch extends Plugin {
                         ])
                     );
                 }
+
+                // Open All
+                if (this.settings.get('RIS-openAll')) {
+                    res.props.children.push(
+                        ...ContextMenu.renderRawItems([
+                            {
+                                type: 'button',
+                                name: 'Reverse Image Search (All)',
+                                id: 'reverse-image-search-all',
+                                onClick: () => {
+                                    _providers.forEach(i =>
+                                        this.open(i.domain, target)
+                                    );
+                                }
+                            }
+                        ])
+                    );
+                }
             }
             return res;
         });

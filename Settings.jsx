@@ -47,6 +47,13 @@ module.exports = class Settings extends React.Component {
                         </SwitchItem>
                     ))}
                 </Category>
+                <SwitchItem
+                    value={this.getSetting('RIS-openAll', false)}
+                    onChange={() => this.toggleSetting(`RIS-openAll`)}
+                    note='Adds an option to search for the image in ALL enabled providers.'
+                >
+                    Open All
+                </SwitchItem>
             </div>
         );
     }
