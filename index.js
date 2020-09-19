@@ -26,43 +26,52 @@ module.exports = class ReverseImageSearch extends Plugin {
                         {
                             type: 'submenu',
                             name: 'Reverse Image Search',
-                            getItems: () => return [{
-                                type: 'button',
-                                name: 'Google Images',
-                                onClick: () =>
-                                    window.open(
-                                        'https://www.google.com/searchbyimage?image_url=' +
-                                            encodeURI(
-                                                getOwnerInstance(target).props
-                                                    .href || target.src
-                                            ),
-                                        '_blank'
-                                    )
-                            }, {
-                                type: 'button',
-                                name: 'TinEye',
-                                onClick: () =>
-                                    window.open(
-                                        'https://www.tineye.com/search?url=' +
-                                            encodeURI(
-                                                getOwnerInstance(target).props
-                                                    .href || target.src
-                                            ),
-                                        '_blank'
-                                    )
-                            }, {
-                                type: 'button',
-                                name: 'SauceNAO',
-                                onClick () =>
-                                    window.open(
-                                        'https://saucenao.com/search.php?url=' +
-                                            encodeURI(
-                                                getOwnerInstance(target).props
-                                                    .href || target.src
-                                            ),
-                                        '_blank'
-                                    )
-                            }]
+                            getItems: () => {
+                                return [
+                                    {
+                                        type: 'button',
+                                        name: 'Google Images',
+                                        onClick: () =>
+                                            window.open(
+                                                'https://www.google.com/searchbyimage?image_url=' +
+                                                    encodeURI(
+                                                        getOwnerInstance(target)
+                                                            .props.href ||
+                                                            target.src
+                                                    ),
+                                                '_blank'
+                                            )
+                                    },
+                                    {
+                                        type: 'button',
+                                        name: 'TinEye',
+                                        onClick: () =>
+                                            window.open(
+                                                'https://www.tineye.com/search?url=' +
+                                                    encodeURI(
+                                                        getOwnerInstance(target)
+                                                            .props.href ||
+                                                            target.src
+                                                    ),
+                                                '_blank'
+                                            )
+                                    },
+                                    {
+                                        type: 'button',
+                                        name: 'SauceNAO',
+                                        onClick: () =>
+                                            window.open(
+                                                'https://saucenao.com/search.php?url=' +
+                                                    encodeURI(
+                                                        getOwnerInstance(target)
+                                                            .props.href ||
+                                                            target.src
+                                                    ),
+                                                '_blank'
+                                            )
+                                    }
+                                ];
+                            }
                         }
                     ])
                 );
