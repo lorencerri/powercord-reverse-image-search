@@ -60,6 +60,7 @@ module.exports = class ReverseImageSearch extends Plugin {
                             {
                                 type: 'button',
                                 name: `Reverse Image Search`,
+                                id: `reverse-image-search-single`,
                                 onClick: () => {
                                     this.open(_providers[0].domain, target);
                                 }
