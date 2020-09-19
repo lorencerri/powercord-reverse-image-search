@@ -1,0 +1,35 @@
+[
+    {
+        "_name": "Name displayed in the submenu",
+        "name": "Google Images",
+        "_domain": "Domain used when searching for images, %% is replaced by the original image's URL",
+        "domain": "https://www.google.com/searchbyimage?image_url=%%",
+        "_default": "Whether or not this search method is enabled by default, if not included, it's false.",
+        "default": true
+    },
+    {
+        "name": "TinEye",
+        "domain": "https://www.tineye.com/search?url=%%"
+    },
+    {
+        "name": "Yandex",
+        "domain": "https://yandex.com/images/search?url=%%&rpt=imageview"
+    },
+    {
+        "name": "WAIT (Anime)",
+        "domain": "https://trace.moe/?auto&url=%%"
+    },
+    {
+        "name": "SauceNAO",
+        "domain": "https://saucenao.com/search.php?url=%%"
+    },
+    {
+        "name": "Bing",
+        "domain": "https://www.bing.com/images/search?q=imgurl:%%&view=detailv2&iss=sbi&FORM=IRSBIQ"
+    },
+    {
+        "name": "Karmadecay",
+        "domain": "http://karmadecay.com/%%"
+    },
+    { "name": "IQDB", "domain": "https://iqdb.org/?url=%%" }
+]
