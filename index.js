@@ -32,10 +32,12 @@ module.exports = class ReverseImageSearch extends Plugin {
                         {
                             type: 'submenu',
                             name: 'Reverse Image Search',
+                            id: 'reverse-image-search-submenu',
                             getItems: () => {
-                                return providers.map(i => ({
+                                return providers.map((i, index) => ({
                                     type: 'button',
                                     name: i[0],
+                                    id: `reverse-image-search-item-${index}`,
                                     onClick: () =>
                                         window.open(
                                             i[1].replace(
