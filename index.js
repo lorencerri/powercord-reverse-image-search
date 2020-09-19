@@ -4,6 +4,11 @@ const { getModule } = require('powercord/webpack');
 const { ContextMenu } = require('powercord/components');
 const { getOwnerInstance } = require('powercord/util');
 
+/**
+ * Hey, if you're reading this I'd appreciate some feedback!
+ * This is my first powercord plugin, so please tell me if I'm doing something incorrectly.
+ */
+
 module.exports = class ReverseImageSearch extends Plugin {
     async startPlugin() {
         const { imageWrapper } = await getModule(['imageWrapper']);
