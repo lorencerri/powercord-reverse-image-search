@@ -82,10 +82,7 @@ module.exports = class ReverseImageSearch extends Plugin {
                                         name: i.name,
                                         id: `reverse-image-search-item-${index}`,
                                         onClick: () => {
-                                            this.open(
-                                                _providers[0].domain,
-                                                target
-                                            );
+                                            this.open(i.domain, target);
                                         }
                                     }));
                                 }
