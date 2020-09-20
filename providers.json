@@ -29,7 +29,7 @@
     },
     {
         "name": "Karmadecay",
-        "domain": "http://karmadecay.com/%%"
+        "domain": "http://karmadecay.com/search?q=%%"
     },
     { "name": "IQDB", "domain": "https://iqdb.org/?url=%%" }
 ]
