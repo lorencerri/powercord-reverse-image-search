@@ -6,8 +6,6 @@ module.exports = class Settings extends React.Component {
     constructor(props) {
         super(props);
         this.state = { categoryOpened: true };
-        this.getSetting = props.getSetting;
-        this.toggleSetting = props.toggleSetting;
     }
 
     get toggledProviders() {
@@ -33,13 +31,14 @@ module.exports = class Settings extends React.Component {
                 >
                     {providers.map(i => (
                         <SwitchItem
-                            value={this.getSetting(
+                            value={this.props.getSetting(
                                 `RIS-provider-${this.toSnake(i.name)}`,
                                 i.default
                             )}
                             onChange={() =>
-                                this.toggleSetting(
-                                    `RIS-provider-${this.toSnake(i.name)}`
+                                this.props.toggleSetting(
+                                    `RIS-provider-${this.toSnake(i.name)}`,
+                                    i.default
                                 )
                             }
                         >
@@ -48,8 +47,10 @@ module.exports = class Settings extends React.Component {
                     ))}
                 </Category>
                 <SwitchItem
-                    value={this.getSetting('RIS-openAll', false)}
-                    onChange={() => this.toggleSetting(`RIS-openAll`)}
+                    value={this.props.getSetting('RIS-openAll', false)}
+                    onChange={() =>
+                        this.props.toggleSetting(`RIS-openAll`, false)
+                    }
                     note='Adds an option to search for the image in ALL enabled providers.'
                 >
                     Open All

@@ -34,7 +34,7 @@ module.exports = class ReverseImageSearch extends Plugin {
 
     async startPlugin() {
         // Register Settings
-        powercord.api.settings.registerSettings('reverse-image-search', {
+        powercord.api.settings.registerSettings(this.entityID, {
             category: this.entityID,
             label: 'Reverse Image Search',
             render: Settings
@@ -46,7 +46,7 @@ module.exports = class ReverseImageSearch extends Plugin {
             m => m.default && m.default.displayName === 'MessageContextMenu'
         );
 
-        inject('reverseImageSearch', mdl, 'default', ([{ target }], res) => {
+        inject('reverse-image-search', mdl, 'default', ([{ target }], res) => {
             if (
                 target.tagName.toLowerCase() === 'img' &&
                 target.parentElement.classList.contains(imageWrapper)
@@ -115,7 +115,7 @@ module.exports = class ReverseImageSearch extends Plugin {
     }
 
     pluginWillUnload() {
-        powercord.api.settings.unregisterSettings('reverse-image-search');
-        uninject('reverseImageSearch');
+        powercord.api.settings.unregisterSettings(this.entityID);
+        uninject('reverse-image-search');
     }
 };
