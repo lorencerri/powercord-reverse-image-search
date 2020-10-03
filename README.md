@@ -8,6 +8,6 @@ A plugin for powercord which allows users to reverse image search media by right
 
 ---
 
-*Check out my other plugins: [truexpixels.github.io/?tag=powercord](https://truexpixels.github.io/?tag=powercord)*
+*Check out my other plugins: [lorencerri.github.io/?tag=powercord](https://lorencerri.github.io/?tag=powercord)*
 
-Twitter: [@truexpixels](https://twitter.com/truexpixels)
+Twitter: [@lorencerri](https://twitter.com/lorencerri)
