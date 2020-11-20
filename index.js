@@ -112,6 +112,8 @@ module.exports = class ReverseImageSearch extends Plugin {
             }
             return res;
         });
+
+        mdl.default.displayName = 'MessageContextMenu';
     }
 
     pluginWillUnload() {
