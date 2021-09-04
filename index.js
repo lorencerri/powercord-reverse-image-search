@@ -41,13 +41,13 @@ module.exports = class ReverseImageSearch extends Plugin {
         const providers = Providers.filter(i =>
             this.settings.get(`RIS-provider-${this.toSnake(i.name)}`, i.default)
         );
-        // Change image target
-        let target = props[0].target;
-        if (target?.children[0]) target = target.children[0]; // Guild Icons
-        if (target?.children[0]?.children[0]?.children[0])
-            target = target.children[0]?.children[0]?.children[0]; // User Avatars (Sidebar)
 
-        console.log(target);
+        // Recursively select target image
+        let target = props[0].target;
+        while (target?.children?.tagName !== 'img') {
+            if (target?.children[0]) target = target.children[0];
+            else break;
+        }
 
         // Change children target
         let children = res.props.children;
