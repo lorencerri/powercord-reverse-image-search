@@ -51,6 +51,72 @@ module.exports = class ReverseImageSearch extends Plugin {
 
         const { imageWrapper } = await getModule(['imageWrapper']);
 
+        // Server Injection
+        const GuildContextMenu = await getModule(
+            m => m.default?.displayName === 'GuildContextMenu'
+        );
+
+        inject(
+            'reverse-image-search-guilds',
+            GuildContextMenu,
+            'default',
+            ([{ target }], res) => {
+                // This needs to be fixed before combining with the other one
+                const children = res.props.children;
+                target = target.children[0];
+                console.log(target, res);
+
+                if (target.tagName.toLowerCase() === 'img') {
+                    const _providers = this.providers;
+
+                    // Display (One Selected)
+                    if (_providers.length === 1) {
+                        children.push(
+                            ...ContextMenu.renderRawItems([
+                                this.createMenuButton(
+                                    'Reverse Image Search',
+                                    'menu',
+                                    () =>
+                                        this.open(_providers[0].domain, target)
+                                ),
+                            ])
+                        );
+                    }
+
+                    // Display (Multiple Selected)
+                    if (_providers.length > 1) {
+                        const providersCtx = this.providers.map((i, index) =>
+                            this.createMenuButton(i.name, index, () =>
+                                this.open(i.domain, target)
+                            )
+                        );
+
+                        // Add "All" button if enabled in settings
+                        if (this.settings.get('RIS-openAll'))
+                            providersCtx.unshift(
+                                this.createMenuButton('All', 'all', () =>
+                                    _providers.forEach(i =>
+                                        this.open(i.domain, target)
+                                    )
+                                )
+                            );
+
+                        children.push(
+                            ...ContextMenu.renderRawItems([
+                                {
+                                    type: 'submenu',
+                                    name: 'Reverse Image Search',
+                                    id: 'reverse-image-search-submenu',
+                                    getItems: () => providersCtx,
+                                },
+                            ])
+                        );
+                    }
+                }
+                return res;
+            }
+        );
+
         // User Injection
         const GuildChannelUserContextMenu = await getModule(
             m => m.default?.displayName === 'GuildChannelUserContextMenu'
@@ -61,6 +127,7 @@ module.exports = class ReverseImageSearch extends Plugin {
             GuildChannelUserContextMenu,
             'default',
             ([{ target }], res) => {
+                // This needs to be fixed before combining with the other one
                 const children = res.props.children.props.children;
 
                 if (target.tagName.toLowerCase() === 'img') {
@@ -185,5 +252,6 @@ module.exports = class ReverseImageSearch extends Plugin {
         powercord.api.settings.unregisterSettings(this.entityID);
         uninject('reverse-image-search-messages');
         uninject('reverse-image-search-users');
+        uninject('reverse-image-search-guilds');
     }
 };
