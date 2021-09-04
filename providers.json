@@ -38,6 +38,5 @@
     {
         "name": "ImgOps",
         "domain": "https://imgops.com/%%",
-        "default": true
     }
 ]
