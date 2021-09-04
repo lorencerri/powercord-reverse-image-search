@@ -54,7 +54,10 @@ module.exports = class ReverseImageSearch extends Plugin {
                 const _providers = this.providers;
 
                 // Display (One Selected)
-                if (_providers.length === 1) {
+                if (
+                    _providers.length === 1 &&
+                    !this.settings.get('RIS-openAll')
+                ) {
                     res.props.children.push(
                         ...ContextMenu.renderRawItems([
                             {
@@ -71,39 +74,34 @@ module.exports = class ReverseImageSearch extends Plugin {
 
                 // Display (Multiple Selected)
                 if (_providers.length > 1) {
+                    const providersCtx = this.providers.map((i, index) => ({
+                        type: 'button',
+                        name: i.name,
+                        id: `reverse-image-search-item-${index}`,
+                        onClick: () => {
+                            this.open(i.domain, target);
+                        },
+                    }));
+
+                    if (this.settings.get('RIS-openAll'))
+                        providersCtx.unshift({
+                            type: 'button',
+                            name: 'All',
+                            id: `reverse-image-search-item-all`,
+                            onClick: () => {
+                                _providers.forEach(i =>
+                                    this.open(i.domain, target)
+                                );
+                            },
+                        });
+
                     res.props.children.push(
                         ...ContextMenu.renderRawItems([
                             {
                                 type: 'submenu',
                                 name: 'Reverse Image Search',
                                 id: 'reverse-image-search-submenu',
-                                getItems: () =>
-                                    this.providers.map((i, index) => ({
-                                        type: 'button',
-                                        name: i.name,
-                                        id: `reverse-image-search-item-${index}`,
-                                        onClick: () => {
-                                            this.open(i.domain, target);
-                                        },
-                                    })),
-                            },
-                        ])
-                    );
-                }
-
-                // Open All
-                if (this.settings.get('RIS-openAll')) {
-                    res.props.children.push(
-                        ...ContextMenu.renderRawItems([
-                            {
-                                type: 'button',
-                                name: 'Reverse Image Search (All)',
-                                id: 'reverse-image-search-all',
-                                onClick: () => {
-                                    _providers.forEach(i =>
-                                        this.open(i.domain, target)
-                                    );
-                                },
+                                getItems: () => providersCtx,
                             },
                         ])
                     );
