@@ -9,9 +9,9 @@ A plugin for powercord which allows users to reverse image search media by right
 -   User Avatars
 -   Guild Icons
 
-| Previews                                                                  |
-| ------------------------------------------------------------------------- |
-| ![](https://i.imgur.com/mwixT5T.gif) ![](https://i.imgur.com/2leN7um.png) |
+| Previews                             |
+| ------------------------------------ | ------------------------------------ |
+| ![](https://i.imgur.com/mwixT5T.gif) | ![](https://i.imgur.com/2leN7um.png) |
 
 | Settings                             |
 | ------------------------------------ |
