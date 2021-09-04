@@ -65,7 +65,7 @@ module.exports = class ReverseImageSearch extends Plugin {
             children.push(
                 ...ContextMenu.renderRawItems([
                     this.createMenuButton('Reverse Image Search', 'menu', () =>
-                        this.open(_providers[0].domain, target)
+                        this.open(providers[0].domain, target)
                     ),
                 ])
             );
