@@ -49,70 +49,141 @@ module.exports = class ReverseImageSearch extends Plugin {
             render: Settings,
         });
 
-        // Image Injection
         const { imageWrapper } = await getModule(['imageWrapper']);
-        const mdl = await getModule(
-            m => m.default && m.default.displayName === 'MessageContextMenu'
+
+        // User Injection
+        const GuildChannelUserContextMenu = await getModule(
+            m => m.default?.displayName === 'GuildChannelUserContextMenu'
         );
 
-        inject('reverse-image-search', mdl, 'default', ([{ target }], res) => {
-            if (
-                target.tagName.toLowerCase() === 'img' &&
-                target.parentElement.classList.contains(imageWrapper)
-            ) {
-                const _providers = this.providers;
+        inject(
+            'reverse-image-search-users',
+            GuildChannelUserContextMenu,
+            'default',
+            ([{ target }], res) => {
+                const children = res.props.children.props.children;
 
-                // Display (One Selected)
-                if (_providers.length === 1) {
-                    res.props.children.push(
-                        ...ContextMenu.renderRawItems([
-                            this.createMenuButton(
-                                'Reverse Image Search',
-                                'menu',
-                                () => this.open(_providers[0].domain, target)
-                            ),
-                        ])
-                    );
-                }
+                if (target.tagName.toLowerCase() === 'img') {
+                    const _providers = this.providers;
 
-                // Display (Multiple Selected)
-                if (_providers.length > 1) {
-                    const providersCtx = this.providers.map((i, index) =>
-                        this.createMenuButton(i.name, index, () =>
-                            this.open(i.domain, target)
-                        )
-                    );
+                    // Display (One Selected)
+                    if (_providers.length === 1) {
+                        children.push(
+                            ...ContextMenu.renderRawItems([
+                                this.createMenuButton(
+                                    'Reverse Image Search',
+                                    'menu',
+                                    () =>
+                                        this.open(_providers[0].domain, target)
+                                ),
+                            ])
+                        );
+                    }
 
-                    // Add "All" button if enabled in settings
-                    if (this.settings.get('RIS-openAll'))
-                        providersCtx.unshift(
-                            this.createMenuButton('All', 'all', () =>
-                                _providers.forEach(i =>
-                                    this.open(i.domain, target)
-                                )
+                    // Display (Multiple Selected)
+                    if (_providers.length > 1) {
+                        const providersCtx = this.providers.map((i, index) =>
+                            this.createMenuButton(i.name, index, () =>
+                                this.open(i.domain, target)
                             )
                         );
 
-                    res.props.children.push(
-                        ...ContextMenu.renderRawItems([
-                            {
-                                type: 'submenu',
-                                name: 'Reverse Image Search',
-                                id: 'reverse-image-search-submenu',
-                                getItems: () => providersCtx,
-                            },
-                        ])
-                    );
+                        // Add "All" button if enabled in settings
+                        if (this.settings.get('RIS-openAll'))
+                            providersCtx.unshift(
+                                this.createMenuButton('All', 'all', () =>
+                                    _providers.forEach(i =>
+                                        this.open(i.domain, target)
+                                    )
+                                )
+                            );
+
+                        children.push(
+                            ...ContextMenu.renderRawItems([
+                                {
+                                    type: 'submenu',
+                                    name: 'Reverse Image Search',
+                                    id: 'reverse-image-search-submenu',
+                                    getItems: () => providersCtx,
+                                },
+                            ])
+                        );
+                    }
                 }
+                return res;
             }
-            return res;
-        });
+        );
+
+        // Message Injection
+        const mdl = await getModule(
+            m => m.default?.displayName === 'MessageContextMenu'
+        );
+
+        inject(
+            'reverse-image-search-messages',
+            mdl,
+            'default',
+            ([{ target }], res) => {
+                if (
+                    target.tagName.toLowerCase() === 'img' &&
+                    target.parentElement.classList.contains(imageWrapper)
+                ) {
+                    const _providers = this.providers;
+
+                    // Display (One Selected)
+                    if (_providers.length === 1) {
+                        res.props.children.push(
+                            ...ContextMenu.renderRawItems([
+                                this.createMenuButton(
+                                    'Reverse Image Search',
+                                    'menu',
+                                    () =>
+                                        this.open(_providers[0].domain, target)
+                                ),
+                            ])
+                        );
+                    }
+
+                    // Display (Multiple Selected)
+                    if (_providers.length > 1) {
+                        const providersCtx = this.providers.map((i, index) =>
+                            this.createMenuButton(i.name, index, () =>
+                                this.open(i.domain, target)
+                            )
+                        );
+
+                        // Add "All" button if enabled in settings
+                        if (this.settings.get('RIS-openAll'))
+                            providersCtx.unshift(
+                                this.createMenuButton('All', 'all', () =>
+                                    _providers.forEach(i =>
+                                        this.open(i.domain, target)
+                                    )
+                                )
+                            );
+
+                        res.props.children.push(
+                            ...ContextMenu.renderRawItems([
+                                {
+                                    type: 'submenu',
+                                    name: 'Reverse Image Search',
+                                    id: 'reverse-image-search-submenu',
+                                    getItems: () => providersCtx,
+                                },
+                            ])
+                        );
+                    }
+                }
+                return res;
+            }
+        );
 
         mdl.default.displayName = 'MessageContextMenu';
     }
 
     pluginWillUnload() {
         powercord.api.settings.unregisterSettings(this.entityID);
-        uninject('reverse-image-search');
+        uninject('reverse-image-search-messages');
+        uninject('reverse-image-search-users');
     }
 };
