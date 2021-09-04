@@ -11,6 +11,7 @@ const ContextMenus = [
     'GuildContextMenu',
     'GuildChannelUserContextMenu',
     'GuildUserContextMenu',
+    'NativeImageContextMenu',
 ];
 
 module.exports = class ReverseImageSearch extends Plugin {
