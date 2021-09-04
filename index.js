@@ -2,16 +2,15 @@ const { Plugin } = require('powercord/entities');
 const { inject, uninject } = require('powercord/injector');
 const { getModule } = require('powercord/webpack');
 const { ContextMenu } = require('powercord/components');
-const { getOwnerInstance } = require('powercord/util');
 
 const Settings = require('./Settings.jsx');
 const Providers = require('./providers.json');
 
-// TODO: Move this to settings
 const ContextMenus = [
     'MessageContextMenu',
     'GuildContextMenu',
     'GuildChannelUserContextMenu',
+    'GuildUserContextMenu',
 ];
 
 module.exports = class ReverseImageSearch extends Plugin {
@@ -42,14 +41,17 @@ module.exports = class ReverseImageSearch extends Plugin {
         const providers = Providers.filter(i =>
             this.settings.get(`RIS-provider-${this.toSnake(i.name)}`, i.default)
         );
-
         // Change image target
         let target = props[0].target;
         if (target?.children[0]) target = target.children[0]; // Guild Icons
+        if (target?.children[0]?.children[0]?.children[0])
+            target = target.children[0]?.children[0]?.children[0]; // User Avatars (Sidebar)
+
+        console.log(target);
 
         // Change children target
         let children = res.props.children;
-        if (children?.props?.children) children = children.props.children; // User Avatars
+        if (children?.props?.children) children = children.props.children; // User Avatars (Messages)
 
         // If target isn't an image, return
         if (target.tagName.toLowerCase() !== 'img') return res;
