@@ -26,7 +26,7 @@ module.exports = class ReverseImageSearch extends Plugin {
         return window.open(
             uri.replace(
                 '%%',
-                encodeURI(getOwnerInstance(target).props.href || target.src)
+                encodeURI(target.parentElement.href || target.src)
             ),
             '_blank'
         );
@@ -37,7 +37,7 @@ module.exports = class ReverseImageSearch extends Plugin {
         powercord.api.settings.registerSettings(this.entityID, {
             category: this.entityID,
             label: 'Reverse Image Search',
-            render: Settings
+            render: Settings,
         });
 
         // Image Injection
@@ -59,12 +59,12 @@ module.exports = class ReverseImageSearch extends Plugin {
                         ...ContextMenu.renderRawItems([
                             {
                                 type: 'button',
-                                name: `Reverse Image Search`,
-                                id: `reverse-image-search-single`,
+                                name: 'Reverse Image Search',
+                                id: 'reverse-image-search-single',
                                 onClick: () => {
                                     this.open(_providers[0].domain, target);
-                                }
-                            }
+                                },
+                            },
                         ])
                     );
                 }
@@ -77,17 +77,16 @@ module.exports = class ReverseImageSearch extends Plugin {
                                 type: 'submenu',
                                 name: 'Reverse Image Search',
                                 id: 'reverse-image-search-submenu',
-                                getItems: () => {
-                                    return this.providers.map((i, index) => ({
+                                getItems: () =>
+                                    this.providers.map((i, index) => ({
                                         type: 'button',
                                         name: i.name,
                                         id: `reverse-image-search-item-${index}`,
                                         onClick: () => {
                                             this.open(i.domain, target);
-                                        }
-                                    }));
-                                }
-                            }
+                                        },
+                                    })),
+                            },
                         ])
                     );
                 }
@@ -104,8 +103,8 @@ module.exports = class ReverseImageSearch extends Plugin {
                                     _providers.forEach(i =>
                                         this.open(i.domain, target)
                                     );
-                                }
-                            }
+                                },
+                            },
                         ])
                     );
                 }

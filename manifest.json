@@ -1,7 +1,7 @@
 {
     "name": "Powercord Reverse Image Search",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Adds a 'reverse image search' option to an image's context menu",
-    "author": "TrueXPixels",
+    "author": "lorencerri",
     "license": "MIT"
 }

@@ -25,7 +25,7 @@ module.exports = class Settings extends React.Component {
                     opened={this.state.categoryOpened}
                     onChange={() =>
                         this.setState({
-                            categoryOpened: !this.state.categoryOpened
+                            categoryOpened: !this.state.categoryOpened,
                         })
                     }
                 >
