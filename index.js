@@ -49,9 +49,12 @@ module.exports = class ReverseImageSearch extends Plugin {
             else break;
         }
 
-        // Change children target
+        // Recursively select children property
         let children = res.props.children;
-        if (children?.props?.children) children = children.props.children; // User Avatars (Messages)
+        while (children?.props?.children) {
+            if (children?.props?.children) children = children.props.children;
+            else break;
+        }
 
         // If target isn't an image, return
         if (target.tagName.toLowerCase() !== 'img') return res;
