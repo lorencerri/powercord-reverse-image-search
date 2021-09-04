@@ -3,23 +3,20 @@ const { inject, uninject } = require('powercord/injector');
 const { getModule } = require('powercord/webpack');
 const { ContextMenu } = require('powercord/components');
 const { getOwnerInstance } = require('powercord/util');
-const Settings = require('./Settings.jsx');
-const providers = require('./providers.json');
 
-/**
- * Hey, if you're reading this I'd appreciate some feedback!
- * This is my first powercord plugin, so please tell me if I'm doing something incorrectly.
- */
+const Settings = require('./Settings.jsx');
+const Providers = require('./providers.json');
+
+// TODO: Move this to settings
+const ContextMenus = [
+    'MessageContextMenu',
+    'GuildContextMenu',
+    'GuildChannelUserContextMenu',
+];
 
 module.exports = class ReverseImageSearch extends Plugin {
     toSnake(str) {
         return str.split(' ').join('-').toLowerCase();
-    }
-
-    get providers() {
-        return providers.filter(i =>
-            this.settings.get(`RIS-provider-${this.toSnake(i.name)}`, i.default)
-        );
     }
 
     open(uri, target) {
@@ -41,6 +38,64 @@ module.exports = class ReverseImageSearch extends Plugin {
         };
     }
 
+    createReverseImageSearch(props, res) {
+        const providers = Providers.filter(i =>
+            this.settings.get(`RIS-provider-${this.toSnake(i.name)}`, i.default)
+        );
+
+        // Change image target
+        let target = props[0].target;
+        if (target?.children[0]) target = target.children[0]; // Guild Icons
+
+        // Change children target
+        let children = res.props.children;
+        if (children?.props?.children) children = children.props.children; // User Avatars
+
+        // If target isn't an image, return
+        if (target.tagName.toLowerCase() !== 'img') return res;
+
+        // Display (One provider selected)
+        if (providers.length === 1) {
+            children.push(
+                ...ContextMenu.renderRawItems([
+                    this.createMenuButton('Reverse Image Search', 'menu', () =>
+                        this.open(_providers[0].domain, target)
+                    ),
+                ])
+            );
+        } else if (providers.length > 1) {
+            // Display (Multiple providers selected)
+            const providersSubmenu = providers.map((i, index) =>
+                this.createMenuButton(i.name, index, () =>
+                    this.open(i.domain, target)
+                )
+            );
+
+            // Add "All" button if enabled in settings
+            if (this.settings.get('RIS-openAll'))
+                providersSubmenu.unshift(
+                    this.createMenuButton('All', 'all', () =>
+                        providers.forEach(i => this.open(i.domain, target))
+                    )
+                );
+
+            // Push submenu to context menu
+            children.push(
+                ...ContextMenu.renderRawItems([
+                    {
+                        type: 'submenu',
+                        name: 'Reverse Image Search',
+                        id: 'reverse-image-search-submenu',
+                        getItems: () => providersSubmenu,
+                    },
+                ])
+            );
+        }
+
+        return res;
+    }
+
+    // This method runs when the plugin is loaded
     async startPlugin() {
         // Register Settings
         powercord.api.settings.registerSettings(this.entityID, {
@@ -49,209 +104,28 @@ module.exports = class ReverseImageSearch extends Plugin {
             render: Settings,
         });
 
-        const { imageWrapper } = await getModule(['imageWrapper']);
+        // Injections
+        for (var i = 0; i < ContextMenus.length; i++) {
+            const ctxName = ContextMenus[i];
+            const ctxMenu = await getModule(
+                m => m.default?.displayName === ctxName
+            );
 
-        // Server Injection
-        const GuildContextMenu = await getModule(
-            m => m.default?.displayName === 'GuildContextMenu'
-        );
+            inject(
+                `reverse-image-search-${ctxName}`,
+                ctxMenu,
+                'default',
+                this.createReverseImageSearch.bind(this)
+            );
 
-        inject(
-            'reverse-image-search-guilds',
-            GuildContextMenu,
-            'default',
-            ([{ target }], res) => {
-                // This needs to be fixed before combining with the other one
-                const children = res.props.children;
-                target = target.children[0];
-                console.log(target, res);
-
-                if (target.tagName.toLowerCase() === 'img') {
-                    const _providers = this.providers;
-
-                    // Display (One Selected)
-                    if (_providers.length === 1) {
-                        children.push(
-                            ...ContextMenu.renderRawItems([
-                                this.createMenuButton(
-                                    'Reverse Image Search',
-                                    'menu',
-                                    () =>
-                                        this.open(_providers[0].domain, target)
-                                ),
-                            ])
-                        );
-                    }
-
-                    // Display (Multiple Selected)
-                    if (_providers.length > 1) {
-                        const providersCtx = this.providers.map((i, index) =>
-                            this.createMenuButton(i.name, index, () =>
-                                this.open(i.domain, target)
-                            )
-                        );
-
-                        // Add "All" button if enabled in settings
-                        if (this.settings.get('RIS-openAll'))
-                            providersCtx.unshift(
-                                this.createMenuButton('All', 'all', () =>
-                                    _providers.forEach(i =>
-                                        this.open(i.domain, target)
-                                    )
-                                )
-                            );
-
-                        children.push(
-                            ...ContextMenu.renderRawItems([
-                                {
-                                    type: 'submenu',
-                                    name: 'Reverse Image Search',
-                                    id: 'reverse-image-search-submenu',
-                                    getItems: () => providersCtx,
-                                },
-                            ])
-                        );
-                    }
-                }
-                return res;
-            }
-        );
-
-        // User Injection
-        const GuildChannelUserContextMenu = await getModule(
-            m => m.default?.displayName === 'GuildChannelUserContextMenu'
-        );
-
-        inject(
-            'reverse-image-search-users',
-            GuildChannelUserContextMenu,
-            'default',
-            ([{ target }], res) => {
-                // This needs to be fixed before combining with the other one
-                const children = res.props.children.props.children;
-
-                if (target.tagName.toLowerCase() === 'img') {
-                    const _providers = this.providers;
-
-                    // Display (One Selected)
-                    if (_providers.length === 1) {
-                        children.push(
-                            ...ContextMenu.renderRawItems([
-                                this.createMenuButton(
-                                    'Reverse Image Search',
-                                    'menu',
-                                    () =>
-                                        this.open(_providers[0].domain, target)
-                                ),
-                            ])
-                        );
-                    }
-
-                    // Display (Multiple Selected)
-                    if (_providers.length > 1) {
-                        const providersCtx = this.providers.map((i, index) =>
-                            this.createMenuButton(i.name, index, () =>
-                                this.open(i.domain, target)
-                            )
-                        );
-
-                        // Add "All" button if enabled in settings
-                        if (this.settings.get('RIS-openAll'))
-                            providersCtx.unshift(
-                                this.createMenuButton('All', 'all', () =>
-                                    _providers.forEach(i =>
-                                        this.open(i.domain, target)
-                                    )
-                                )
-                            );
-
-                        children.push(
-                            ...ContextMenu.renderRawItems([
-                                {
-                                    type: 'submenu',
-                                    name: 'Reverse Image Search',
-                                    id: 'reverse-image-search-submenu',
-                                    getItems: () => providersCtx,
-                                },
-                            ])
-                        );
-                    }
-                }
-                return res;
-            }
-        );
-
-        // Message Injection
-        const mdl = await getModule(
-            m => m.default?.displayName === 'MessageContextMenu'
-        );
-
-        inject(
-            'reverse-image-search-messages',
-            mdl,
-            'default',
-            ([{ target }], res) => {
-                if (
-                    target.tagName.toLowerCase() === 'img' &&
-                    target.parentElement.classList.contains(imageWrapper)
-                ) {
-                    const _providers = this.providers;
-
-                    // Display (One Selected)
-                    if (_providers.length === 1) {
-                        res.props.children.push(
-                            ...ContextMenu.renderRawItems([
-                                this.createMenuButton(
-                                    'Reverse Image Search',
-                                    'menu',
-                                    () =>
-                                        this.open(_providers[0].domain, target)
-                                ),
-                            ])
-                        );
-                    }
-
-                    // Display (Multiple Selected)
-                    if (_providers.length > 1) {
-                        const providersCtx = this.providers.map((i, index) =>
-                            this.createMenuButton(i.name, index, () =>
-                                this.open(i.domain, target)
-                            )
-                        );
-
-                        // Add "All" button if enabled in settings
-                        if (this.settings.get('RIS-openAll'))
-                            providersCtx.unshift(
-                                this.createMenuButton('All', 'all', () =>
-                                    _providers.forEach(i =>
-                                        this.open(i.domain, target)
-                                    )
-                                )
-                            );
-
-                        res.props.children.push(
-                            ...ContextMenu.renderRawItems([
-                                {
-                                    type: 'submenu',
-                                    name: 'Reverse Image Search',
-                                    id: 'reverse-image-search-submenu',
-                                    getItems: () => providersCtx,
-                                },
-                            ])
-                        );
-                    }
-                }
-                return res;
-            }
-        );
-
-        mdl.default.displayName = 'MessageContextMenu';
+            ctxMenu.default.displayName = ctxName;
+        }
     }
 
     pluginWillUnload() {
         powercord.api.settings.unregisterSettings(this.entityID);
-        uninject('reverse-image-search-messages');
-        uninject('reverse-image-search-users');
-        uninject('reverse-image-search-guilds');
+        for (var i = 0; i < ContextMenus.length; i++) {
+            uninject(`reverse-image-search-${ContextMenus[i]}`);
+        }
     }
 };
