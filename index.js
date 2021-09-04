@@ -54,10 +54,7 @@ module.exports = class ReverseImageSearch extends Plugin {
                 const _providers = this.providers;
 
                 // Display (One Selected)
-                if (
-                    _providers.length === 1 &&
-                    !this.settings.get('RIS-openAll')
-                ) {
+                if (_providers.length === 1) {
                     res.props.children.push(
                         ...ContextMenu.renderRawItems([
                             {
