@@ -120,7 +120,7 @@ module.exports = class ReverseImageSearch extends Plugin {
                 this.createReverseImageSearch.bind(this)
             );
 
-            //ctxMenu.default.displayName = ctxName;
+            ctxMenu.default.displayName = ctxName;
         }
     }
 
