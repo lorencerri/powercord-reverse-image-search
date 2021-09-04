@@ -32,6 +32,15 @@ module.exports = class ReverseImageSearch extends Plugin {
         );
     }
 
+    createMenuButton(name, id, callback) {
+        return {
+            type: 'button',
+            name,
+            id: `reverse-image-search-${id}`,
+            onClick: callback,
+        };
+    }
+
     async startPlugin() {
         // Register Settings
         powercord.api.settings.registerSettings(this.entityID, {
@@ -57,40 +66,32 @@ module.exports = class ReverseImageSearch extends Plugin {
                 if (_providers.length === 1) {
                     res.props.children.push(
                         ...ContextMenu.renderRawItems([
-                            {
-                                type: 'button',
-                                name: 'Reverse Image Search',
-                                id: 'reverse-image-search-single',
-                                onClick: () => {
-                                    this.open(_providers[0].domain, target);
-                                },
-                            },
+                            this.createMenuButton(
+                                'Reverse Image Search',
+                                'menu',
+                                () => this.open(_providers[0].domain, target)
+                            ),
                         ])
                     );
                 }
 
                 // Display (Multiple Selected)
                 if (_providers.length > 1) {
-                    const providersCtx = this.providers.map((i, index) => ({
-                        type: 'button',
-                        name: i.name,
-                        id: `reverse-image-search-item-${index}`,
-                        onClick: () => {
-                            this.open(i.domain, target);
-                        },
-                    }));
+                    const providersCtx = this.providers.map((i, index) =>
+                        this.createMenuButton(i.name, index, () =>
+                            this.open(i.domain, target)
+                        )
+                    );
 
+                    // Add "All" button if enabled in settings
                     if (this.settings.get('RIS-openAll'))
-                        providersCtx.unshift({
-                            type: 'button',
-                            name: 'All',
-                            id: `reverse-image-search-item-all`,
-                            onClick: () => {
+                        providersCtx.unshift(
+                            this.createMenuButton('All', 'all', () =>
                                 _providers.forEach(i =>
                                     this.open(i.domain, target)
-                                );
-                            },
-                        });
+                                )
+                            )
+                        );
 
                     res.props.children.push(
                         ...ContextMenu.renderRawItems([
