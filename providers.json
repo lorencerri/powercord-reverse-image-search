@@ -31,5 +31,13 @@
         "name": "Karmadecay",
         "domain": "http://karmadecay.com/search?q=%%"
     },
-    { "name": "IQDB", "domain": "https://iqdb.org/?url=%%" }
+    {
+        "name": "IQDB",
+        "domain": "https://iqdb.org/?url=%%"
+    },
+    {
+        "name": "ImgOps",
+        "domain": "https://imgops.com/%%",
+        "default": true
+    }
 ]
