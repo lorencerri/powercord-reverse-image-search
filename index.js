@@ -44,7 +44,7 @@ module.exports = class ReverseImageSearch extends Plugin {
         );
 
         // Recursively select target image
-        let target = props[0].target;
+        let target = props[0]?.target;
         while (target?.children?.tagName !== 'img') {
             if (target?.children[0]) target = target.children[0];
             else break;
@@ -54,7 +54,7 @@ module.exports = class ReverseImageSearch extends Plugin {
         if (target.tagName.toLowerCase() !== 'img') return res;
 
         // Recursively select children property
-        let children = res.props.children;
+        let children = res?.props?.children;
         while (typeof children !== 'array' && children?.props?.children) {
             if (children?.props?.children) children = children.props.children;
             else break;
