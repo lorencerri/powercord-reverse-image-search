@@ -50,15 +50,15 @@ module.exports = class ReverseImageSearch extends Plugin {
             else break;
         }
 
+        // If target isn't an image, return
+        if (target.tagName.toLowerCase() !== 'img') return res;
+
         // Recursively select children property
         let children = res.props.children;
-        while (children?.props?.children) {
+        while (typeof children !== 'array' && children?.props?.children) {
             if (children?.props?.children) children = children.props.children;
             else break;
         }
-
-        // If target isn't an image, return
-        if (target.tagName.toLowerCase() !== 'img') return res;
 
         // Display (One provider selected)
         if (providers.length === 1) {
