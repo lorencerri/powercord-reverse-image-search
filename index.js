@@ -45,8 +45,13 @@ module.exports = class ReverseImageSearch extends Plugin {
 
         // Recursively select target image
         let target = props[0]?.target;
+
+        // Return when clicked on table
+        if (['TD', 'TR', 'TABLE', 'SPAN'].includes(target.tagName)) return res;
+
         while (target?.children?.tagName !== 'img') {
-            if (target?.children[0]) target = target.children[0];
+            if (target?.children && target?.children[0])
+                target = target.children[0];
             else break;
         }
 
