@@ -20,13 +20,7 @@ module.exports = class ReverseImageSearch extends Plugin {
     }
 
     open(uri, target) {
-        return window.open(
-            uri.replace(
-                '%%',
-                encodeURI(target.parentElement.href || target.src)
-            ),
-            '_blank'
-        );
+        return window.open(uri.replace('%%', encodeURI(target.src)), '_blank');
     }
 
     createMenuButton(name, id, callback) {
