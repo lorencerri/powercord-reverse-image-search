@@ -20,7 +20,14 @@ module.exports = class ReverseImageSearch extends Plugin {
     }
 
     open(uri, target) {
-        return window.open(uri.replace('%%', encodeURI(target.src)), '_blank');
+        let encoded = uri.replace('%%', encodeURI(target.src));
+        if (this.settings.get(`RIS-convertPNG`, false)) {
+            encoded = encoded.replace('.webp', '.png');
+        }
+        if (this.settings.get(`RIS-enlargeImages`, false)) {
+            encoded = encoded.replace('size=32', 'size=512');
+        }
+        return window.open(encoded, '_blank');
     }
 
     createMenuButton(name, id, callback) {
