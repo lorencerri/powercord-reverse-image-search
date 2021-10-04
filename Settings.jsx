@@ -55,24 +55,6 @@ module.exports = class Settings extends React.Component {
                 >
                     Open All
                 </SwitchItem>
-                <SwitchItem
-                    value={this.props.getSetting('RIS-enlargeImages', false)}
-                    onChange={() =>
-                        this.props.toggleSetting(`RIS-enlargeImages`, false)
-                    }
-                    note='Change the size of server icons / avatars from 32 to 512 or highest when searching.'
-                >
-                    Enlarge icons
-                </SwitchItem>
-                <SwitchItem
-                    value={this.props.getSetting('RIS-convertPNG', false)}
-                    onChange={() =>
-                        this.props.toggleSetting(`RIS-convertPNG`, false)
-                    }
-                    note='Automatically changes the extension from .webp to .png when searching.'
-                >
-                    .webp to .png
-                </SwitchItem>
             </div>
         );
     }

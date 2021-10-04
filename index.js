@@ -20,16 +20,11 @@ module.exports = class ReverseImageSearch extends Plugin {
     }
 
     open(uri, target) {
-        let encoded = uri.replace(
-            '%%',
-            encodeURI(target.parentElement.href || target.src)
-        );
-        if (this.settings.get(`RIS-convertPNG`, false)) {
-            encoded = encoded.replace('.webp', '.png');
-        }
-        if (this.settings.get(`RIS-enlargeImages`, false)) {
-            encoded = encoded.replace('size=32', 'size=512');
-        }
+        let img = target.parentElement.href || target.src;
+        img = img.split('?')[0]; // remove search parameters
+        console.log(img);
+        let encoded = uri.replace('%%', encodeURI(img));
+        console.log(encoded);
         return window.open(encoded, '_blank');
     }
 
