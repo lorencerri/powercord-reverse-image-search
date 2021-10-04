@@ -20,7 +20,10 @@ module.exports = class ReverseImageSearch extends Plugin {
     }
 
     open(uri, target) {
-        let encoded = uri.replace('%%', encodeURI(target.src));
+        let encoded = uri.replace(
+            '%%',
+            encodeURI(target.parentElement.href || target.src)
+        );
         if (this.settings.get(`RIS-convertPNG`, false)) {
             encoded = encoded.replace('.webp', '.png');
         }
