@@ -47,14 +47,20 @@ module.exports = class ReverseImageSearch extends Plugin {
             this.settings.get(`RIS-provider-${this.toSnake(i.name)}`, i.default)
         );
 
-        // Select target image
+        // Recursively select target image
         let target = props[0]?.target;
-        if (!target) return res;
-        if (target.tagName.toLowerCase() !== 'img')
-            target = target.querySelector('img');
+
+        // Return when clicked on table
+        if (['TD', 'TR', 'TABLE', 'SPAN'].includes(target.tagName)) return res;
+
+        while (target?.children?.tagName !== 'img') {
+            if (target?.children && target?.children[0])
+                target = target.children[0];
+            else break;
+        }
 
         // If target isn't an image, return
-        if (!target || target.tagName.toLowerCase() !== 'img') return res;
+        if (target.tagName.toLowerCase() !== 'img') return res;
 
         // Recursively select children property
         let children = res?.props?.children;
