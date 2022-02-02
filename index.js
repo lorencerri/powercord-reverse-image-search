@@ -110,6 +110,38 @@ module.exports = class ReverseImageSearch extends Plugin {
         return res;
     }
 
+    // Credit to SammCheese:
+    // https://github.com/SammCheese/holy-notes/blob/e9157324c3d210f1f177c14c6f08ab0580b62dad/index.js#L70
+    async lazyPatchContextMenu(displayName, patch) {
+        const filter = (m) => m.default && m.default.displayName === displayName;
+        const m = getModule(filter, false);
+        if (m) patch(m);
+        else {
+            inject(
+                `reverse-image-search-${displayName}-lazy`,
+                getModule(["openContextMenuLazy"], false),
+                "openContextMenuLazy",
+                (args) => {
+                    const lazyRender = args[1];
+                    args[1] = async () => {
+                        const render = await lazyRender(args[0]);
+                        return (config) => {
+                            const menu = render(config);
+                            if (menu?.type?.displayName === displayName && patch) {
+                                uninject(`reverse-image-search-${displayName}-lazy`);
+                                patch(getModule(filter, false));
+                                patch = false;
+                            }
+                            return menu;
+                        };
+                    }
+                    return args;
+                },
+                true
+            );
+        }
+    }
+
     // This method runs when the plugin is loaded
     async startPlugin() {
         // Register Settings
@@ -122,18 +154,16 @@ module.exports = class ReverseImageSearch extends Plugin {
         // Injections
         for (var i = 0; i < ContextMenus.length; i++) {
             const ctxName = ContextMenus[i];
-            const ctxMenu = await getModule(
-                m => m.default?.displayName === ctxName
-            );
+            this.lazyPatchContextMenu(ctxName, (ctxMenu) => {
+                inject(
+                    `reverse-image-search-${ctxName}`,
+                    ctxMenu,
+                    'default',
+                    this.createReverseImageSearch.bind(this)
+                );
 
-            inject(
-                `reverse-image-search-${ctxName}`,
-                ctxMenu,
-                'default',
-                this.createReverseImageSearch.bind(this)
-            );
-
-            ctxMenu.default.displayName = ctxName;
+                ctxMenu.default.displayName = ctxName;
+            });
         }
     }
 
@@ -141,6 +171,7 @@ module.exports = class ReverseImageSearch extends Plugin {
         powercord.api.settings.unregisterSettings(this.entityID);
         for (var i = 0; i < ContextMenus.length; i++) {
             uninject(`reverse-image-search-${ContextMenus[i]}`);
+            uninject(`reverse-image-search-${ContextMenus[i]}-lazy`);
         }
     }
 };
