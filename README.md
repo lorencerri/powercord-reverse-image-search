@@ -2,6 +2,8 @@
 
 A plugin for powercord which allows users to reverse image search media by right simply right clicking.
 
+> Note: This plugin utilizes lazy-loading, you may need to right click twice the first time you want to search for an image.
+
 **Supports:**
 
 -   Emojis
